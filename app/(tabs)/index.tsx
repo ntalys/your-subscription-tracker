@@ -11,6 +11,10 @@ export default function Index() {
       <Text className="text-xl font-bold text-success">
         Welcome to Nativewind!
       </Text>
+
+      <Text className="text-xl font-bold text-success font-sans-extrabold">
+        Welcome to Nativewind!
+      </Text>
       <Link
         href={"/(auth)/sign-in"}
         className="mt-4 rounded bg-primary text-white p-4">
