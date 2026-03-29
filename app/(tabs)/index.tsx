@@ -24,7 +24,7 @@ export default function Index() {
       </Link>
 
       <Link
-        href={"/(tabs)/subscriptions/spotify"}
+        href={"/subscriptions/spotify"}
         className="mt-4 rounded bg-primary text-white p-4">
         Spotify Subscription
       </Link>
