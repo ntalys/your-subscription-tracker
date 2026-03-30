@@ -25,6 +25,7 @@ declare global {
     currency?: string;
     billing: string;
     renewalDate?: string;
+    frequency?: string;
     color?: string;
   }
 
