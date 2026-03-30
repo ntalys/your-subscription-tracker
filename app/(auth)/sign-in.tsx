@@ -46,7 +46,7 @@ const SignIn = () => {
     });
 
     if (error) {
-      console.error(JSON.stringify(error, null, 2));
+      console.error("HERE: ", JSON.stringify(error, null, 2));
       // posthog.capture("user_sign_in_failed", {
       //   error_message: error.message,
       // });
@@ -83,6 +83,7 @@ const SignIn = () => {
       });
     } else if (signIn.status === "needs_second_factor") {
       // Handle MFA if needed (not implemented in this basic flow)
+      await signIn.mfa.sendEmailCode();
       console.log("MFA required");
     } else if (signIn.status === "needs_client_trust") {
       // Send email code for client trust verification
@@ -136,6 +137,83 @@ const SignIn = () => {
   };
 
   // Show verification screen if client trust is needed
+  if (signIn.status === "needs_second_factor") {
+    return (
+      <SafeAreaView className="auth-safe-area">
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          className="auth-screen">
+          <ScrollView
+            className="auth-scroll"
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}>
+            <View className="auth-content">
+              {/* Branding */}
+              <View className="auth-brand-block">
+                <View className="auth-logo-wrap">
+                  <View className="auth-logo-mark">
+                    <Text className="auth-logo-mark-text">R</Text>
+                  </View>
+                  <View>
+                    <Text className="auth-wordmark">Recurrly</Text>
+                    <Text className="auth-wordmark-sub">SUBSCRIPTIONS</Text>
+                  </View>
+                </View>
+                <Text className="auth-title">Verify your email</Text>
+                <Text className="auth-subtitle">
+                  We sent a verification code to {emailAddress}
+                </Text>
+              </View>
+
+              {/* Verification Form */}
+              <View className="auth-card">
+                <View className="auth-form">
+                  <View className="auth-field">
+                    <Text className="auth-label">Verification Code</Text>
+                    <TextInput
+                      className="auth-input"
+                      value={code}
+                      placeholder="Enter 6-digit code"
+                      placeholderTextColor="rgba(0, 0, 0, 0.4)"
+                      onChangeText={setCode}
+                      keyboardType="number-pad"
+                      autoComplete="one-time-code"
+                      maxLength={6}
+                    />
+                    {errors.fields.code && (
+                      <Text className="auth-error">
+                        {errors.fields.code.message}
+                      </Text>
+                    )}
+                  </View>
+
+                  <Pressable
+                    className={`auth-button ${(!code || fetchStatus === "fetching") && "auth-button-disabled"}`}
+                    onPress={handleVerify}
+                    disabled={!code || fetchStatus === "fetching"}>
+                    <Text className="auth-button-text">
+                      {fetchStatus === "fetching"
+                        ? "Verifying..."
+                        : "Verify Email"}
+                    </Text>
+                  </Pressable>
+
+                  <Pressable
+                    className="auth-secondary-button"
+                    onPress={() => signIn.mfa.sendEmailCode()}
+                    disabled={fetchStatus === "fetching"}>
+                    <Text className="auth-secondary-button-text">
+                      Resend Code
+                    </Text>
+                  </Pressable>
+                </View>
+              </View>
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    );
+  }
   if (signIn.status === "needs_client_trust") {
     return (
       <SafeAreaView className="auth-safe-area">
